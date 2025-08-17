@@ -43,14 +43,15 @@ internal sealed class Restrictor : IDisposable
         var classname = WeaponOps.ResolveClassname(cfg, defIndex, item);
         if (string.IsNullOrWhiteSpace(classname)) return;
         
-        if (Perms.HasBypass(cfg, player))
-            return;
-        
-        if (DelayedWork.SeenRecently(player.SteamID, classname, 900)) return;
-        
         var playerCount = WorldQuery.CountPlayers(cfg, team);
         if (!RuleBook.TryGetLimit(cfg, classname, playerCount, team, out var limit)) return;
-
+        
+        bool isInNoBypassList = (cfg.NoBypassWeapons?.Any(w => w.Equals(classname, StringComparison.OrdinalIgnoreCase)) ?? false);
+        bool hardBan = (limit == 0 && !cfg.BypassAllowedWhenLimitIsZero) || isInNoBypassList;
+        
+        if (!hardBan && Perms.HasBypass(cfg, player))
+            return;
+        
         var currentCount = WorldQuery.CountWeaponAcrossPlayers(cfg, classname, team);
         if (limit == -1 || currentCount <= limit) return;
         
@@ -63,7 +64,6 @@ internal sealed class Restrictor : IDisposable
         var roundSerial = _round.Current;
         
         ActiveLock.Start(_plugin, player, classname);
-        
         _plugin.AddTimer(0.05f, () =>
         {
             WeaponOps.EnqueueRestricted(_plugin, player, classname, _round, roundSerial);

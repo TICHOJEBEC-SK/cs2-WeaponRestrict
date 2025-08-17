@@ -10,6 +10,8 @@ public class RestrictedWeaponsConfig : BasePluginConfig
     [JsonPropertyName("TypeWeapons")] public int TypeWeapons { get; set; } = 1;
     [JsonPropertyName("CountSpectators")] public bool CountSpectators { get; set; } = false;
     [JsonPropertyName("BypassPermissions")] public List<string> BypassPermissions { get; set; } = new() { "@vip/restrict", "@css/root" };
+    [JsonPropertyName("BypassAllowedWhenLimitIsZero")] public bool BypassAllowedWhenLimitIsZero { get; set; } = false;
+    [JsonPropertyName("NoBypassWeapons")] public List<string> NoBypassWeapons { get; set; } = new();
     [JsonPropertyName("Phrases")] public PhrasesSection Phrases { get; set; } = new();
     [JsonPropertyName("DefIndexToClass")] public Dictionary<int, string> DefIndexToClass { get; set; } = WeaponDefaults.DefaultDefIndexToClass();
     [JsonPropertyName("Rules")] public Dictionary<string, Dictionary<int, Dictionary<string, int>>> Rules { get; set; } = WeaponDefaults.DefaultRules();
@@ -25,10 +27,8 @@ public class RestrictedWeaponsConfig : BasePluginConfig
 
 public class PhrasesSection
 {
-    [JsonPropertyName("Block")] 
-    public string Block { get; set; } = "This weapon is restricted: {weapon} (limit: {limit}).";
-    [JsonPropertyName("BlockTeam")] 
-    public string BlockTeam { get; set; } = "This weapon is restricted for your team: {weapon} (limit: {limit}).";
+    [JsonPropertyName("Block")] public string Block { get; set; } = "This weapon is restricted: {weapon} (limit: {limit}).";
+    [JsonPropertyName("BlockTeam")] public string BlockTeam { get; set; } = "This weapon is restricted for your team: {weapon} (limit: {limit}).";
     [JsonPropertyName("WeaponPretty")] public Dictionary<string, string> WeaponPretty { get; set; } = WeaponDefaults.DefaultWeaponPretty();
 
     public string Pretty(string classname)
