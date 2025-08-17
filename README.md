@@ -1,4 +1,6 @@
-# CS2 WeaponRestrict
+<h1 align="center">
+  CS2 WeaponRestrict
+</h1>
 
 <p align="center">
 <i>Loved the tool? Please consider <a href="https://paypal.com/paypalme/playpointsk">donating</a> 💸 to help it improve!</i>
@@ -14,7 +16,9 @@
 ## 📜 About the Plugin
 
 A **Counter-Strike 2 plugin** for **CounterStrikeSharp** that lets you **restrict weapons** by rules.  
-If a player picks up or buys a restricted weapon, it will be **automatically dropped and swapped to knife** — without server crashes and without money refunds.  
+If a player picks up or buys a restricted weapon, it will be:
+- **Automatically dropped and swapped to knife** (equip restriction)
+- **Automatically sold with refund** (purchase restriction)
 
 Supports:
 - **Configurable restrictions** (per map, per team, per player count)
@@ -22,17 +26,19 @@ Supports:
 - **Bypass permissions** (e.g. VIP can ignore restrictions — optional, configurable)
 - **Hard-ban system** (limits with `0` or `NoBypassWeapons` cannot be bypassed by anyone)
 - **Automatic classnames** from weapon DefIndex
-- **Custom chat messages** (with weapon pretty names and colors)
+- **Custom chat messages** (with weapon pretty names and placeholders)
+- **Weapon price map** for refunds
 
 ---
 
 ## 🔹 Features
 
-- Restrict **any weapon** via config  
-- Drop system with **anti-spam protection**  
-- **Safe ActiveLock** prevents exploits (players can’t force-equip restricted guns)  
-- Lightweight and crash-safe  
-- Multi-language friendly (phrases in config)  
+- Restrict **any weapon** via config
+- Drop system with **anti-spam protection**
+- **Safe ActiveLock** prevents exploits (players can’t force-equip restricted guns)
+- Lightweight and crash-safe
+- Multi-language friendly (phrases in config)
+- **Auto-sell restricted weapons** with money refund
 - **Per-map overrides** for rules and hard-bans
 
 ---
@@ -66,7 +72,9 @@ Config is generated on first run:
   "NoBypassWeapons": [ "weapon_awp", "weapon_g3sg1" ],
   "Phrases": {
     "Block": "This weapon is restricted: {weapon} (limit: {limit}).",
-    "BlockTeam": "This weapon is restricted for your team: {weapon} (limit: {limit})."
+    "BlockTeam": "This weapon is restricted for your team: {weapon} (limit: {limit}).",
+    "SellRefund": "Restricted {weapon} was auto-sold for {price}$. ",
+    "SellRemoved": "Restricted {weapon} was removed from your inventory."
   },
   "DefIndexToClass": { ... },
   "Rules": {
@@ -84,15 +92,15 @@ Config is generated on first run:
 
 ### 🔧 Options
 - **TypePlayers**
-  - `1` = count all players  
-  - `2` = count only teammates
+    - `1` = count all players
+    - `2` = count only teammates
 - **TypeWeapons**
-  - `1` = restrict globally  
-  - `2` = restrict per team
+    - `1` = restrict globally
+    - `2` = restrict per team
 - **BypassPermissions** – list of permissions that can ignore restrictions (VIP/root)
 - **BypassAllowedWhenLimitIsZero**
-  - `false` = VIP/admin **cannot bypass** weapons with limit `0` (hard-ban)  
-  - `true` = VIP/admin **can still bypass** limit `0`
+    - `false` = VIP/admin **cannot bypass** weapons with limit `0` (hard-ban)
+    - `true` = VIP/admin **can still bypass** limit `0`
 - **NoBypassWeapons** – explicit list of classnames that **nobody can bypass**, regardless of limit  
   Example: `[ "weapon_awp", "weapon_g3sg1" ]`
 - **Rules** – weapon limits per map and player count (`all` applies everywhere)

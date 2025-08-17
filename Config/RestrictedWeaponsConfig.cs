@@ -27,14 +27,27 @@ public class RestrictedWeaponsConfig : BasePluginConfig
 
 public class PhrasesSection
 {
-    [JsonPropertyName("Block")] public string Block { get; set; } = "This weapon is restricted: {weapon} (limit: {limit}).";
-    [JsonPropertyName("BlockTeam")] public string BlockTeam { get; set; } = "This weapon is restricted for your team: {weapon} (limit: {limit}).";
-    [JsonPropertyName("WeaponPretty")] public Dictionary<string, string> WeaponPretty { get; set; } = WeaponDefaults.DefaultWeaponPretty();
+    [JsonPropertyName("Block")] 
+    public string Block { get; set; } = "This weapon is restricted: {weapon} (limit: {limit}).";
+
+    [JsonPropertyName("BlockTeam")] 
+    public string BlockTeam { get; set; } = "This weapon is restricted for your team: {weapon} (limit: {limit}).";
+
+    [JsonPropertyName("SellRefund")]
+    public string SellRefund { get; set; } = "Restricted {weapon} was auto-sold for {price}$.";
+
+    [JsonPropertyName("SellRemoved")]
+    public string SellRemoved { get; set; } = "Restricted {weapon} was removed from your inventory.";
+
+    [JsonPropertyName("WeaponPretty")] 
+    public Dictionary<string, string> WeaponPretty { get; set; } = WeaponDefaults.DefaultWeaponPretty();
 
     public string Pretty(string classname)
     {
-        if (WeaponPretty.TryGetValue(classname, out var p) && !string.IsNullOrWhiteSpace(p)) return p;
+        if (WeaponPretty.TryGetValue(classname, out var p) && !string.IsNullOrWhiteSpace(p)) 
+            return p;
         var raw = classname.StartsWith("weapon_") ? classname.Substring("weapon_".Length) : classname;
         return raw.ToUpperInvariant();
     }
 }
+
