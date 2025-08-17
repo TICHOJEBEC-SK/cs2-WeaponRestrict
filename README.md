@@ -1,6 +1,4 @@
-<h1 align="center">
-  CS2 WeaponRestrict
-</h1>
+# CS2 WeaponRestrict
 
 <p align="center">
 <i>Loved the tool? Please consider <a href="https://paypal.com/paypalme/playpointsk">donating</a> 💸 to help it improve!</i>
@@ -21,7 +19,8 @@ If a player picks up or buys a restricted weapon, it will be **automatically dro
 Supports:
 - **Configurable restrictions** (per map, per team, per player count)
 - **Dynamic limits** (e.g. *max 1 AWP until 10 players, max 2 AWP after 10 players*)
-- **Bypass permissions** (e.g. VIP can ignore restrictions)
+- **Bypass permissions** (e.g. VIP can ignore restrictions — optional, configurable)
+- **Hard-ban system** (limits with `0` or `NoBypassWeapons` cannot be bypassed by anyone)
 - **Automatic classnames** from weapon DefIndex
 - **Custom chat messages** (with weapon pretty names and colors)
 
@@ -34,6 +33,7 @@ Supports:
 - **Safe ActiveLock** prevents exploits (players can’t force-equip restricted guns)  
 - Lightweight and crash-safe  
 - Multi-language friendly (phrases in config)  
+- **Per-map overrides** for rules and hard-bans
 
 ---
 
@@ -62,6 +62,8 @@ Config is generated on first run:
   "TypeWeapons": 1,
   "CountSpectators": false,
   "BypassPermissions": [ "@vip/restrict", "@css/root" ],
+  "BypassAllowedWhenLimitIsZero": false,
+  "NoBypassWeapons": [ "weapon_awp", "weapon_g3sg1" ],
   "Phrases": {
     "Block": "This weapon is restricted: {weapon} (limit: {limit}).",
     "BlockTeam": "This weapon is restricted for your team: {weapon} (limit: {limit})."
@@ -70,12 +72,17 @@ Config is generated on first run:
   "Rules": {
     "all": {
       "5": { "weapon_awp": 1 },
-      "10": { "weapon_awp": 2 }
+      "10": { "weapon_awp": 2 },
+      "0": { "weapon_deagle": 0 }
+    },
+    "de_dust2": {
+      "0": { "weapon_scar20": 0 }
     }
   }
 }
 ```
 
+### 🔧 Options
 - **TypePlayers**
   - `1` = count all players  
   - `2` = count only teammates
@@ -83,7 +90,12 @@ Config is generated on first run:
   - `1` = restrict globally  
   - `2` = restrict per team
 - **BypassPermissions** – list of permissions that can ignore restrictions (VIP/root)
-- **Rules** – weapon limits per map and player count
+- **BypassAllowedWhenLimitIsZero**
+  - `false` = VIP/admin **cannot bypass** weapons with limit `0` (hard-ban)  
+  - `true` = VIP/admin **can still bypass** limit `0`
+- **NoBypassWeapons** – explicit list of classnames that **nobody can bypass**, regardless of limit  
+  Example: `[ "weapon_awp", "weapon_g3sg1" ]`
+- **Rules** – weapon limits per map and player count (`all` applies everywhere)
 
 ---
 
