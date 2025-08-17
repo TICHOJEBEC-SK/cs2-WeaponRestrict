@@ -67,26 +67,43 @@ Config is generated on first run:
   "TypePlayers": 1,
   "TypeWeapons": 1,
   "CountSpectators": false,
-  "BypassPermissions": [ "@vip/restrict", "@css/root" ],
+  "BypassPermissions": [
+    "@vip/restrict",
+    "@css/root"
+  ],
   "BypassAllowedWhenLimitIsZero": false,
-  "NoBypassWeapons": [ "weapon_awp", "weapon_g3sg1" ],
+  "NoBypassWeapons": [],
   "Phrases": {
-    "Block": "This weapon is restricted: {weapon} (limit: {limit}).",
-    "BlockTeam": "This weapon is restricted for your team: {weapon} (limit: {limit}).",
-    "SellRefund": "Restricted {weapon} was auto-sold for {price}$. ",
-    "SellRemoved": "Restricted {weapon} was removed from your inventory."
+    "Block": "Táto zbraň je obmedzená: {weapon} (limit: {limit}).",
+    "BlockTeam": "Táto zbraň je obmedzená: {weapon} (limit: {limit}).",
+    "SellRefund": "Obmedzená zbraň {weapon} bola automaticky predaná za {price}$.",
+    "SellRemoved": "Obmedzená zbraň {weapon} bola odstránená z tvojho inventára.",
+    "WeaponPretty": {...}
   },
-  "DefIndexToClass": { ... },
+  "DefIndexToClass": {...},
   "Rules": {
     "all": {
-      "5": { "weapon_awp": 1 },
-      "10": { "weapon_awp": 2 },
-      "0": { "weapon_deagle": 0 }
+      "0": {
+        "weapon_g3sg1": 0,
+        "weapon_scar20": 0
+      },
+      "4": {
+        "weapon_awp": 1
+      },
+      "5": {
+        "weapon_awp": 2
+      },
+      "7": {
+        "weapon_awp": 3
+      }
     },
     "de_dust2": {
-      "0": { "weapon_scar20": 0 }
+      "0": {
+        "weapon_deagle": 0
+      }
     }
-  }
+  },
+  "ConfigVersion": 1
 }
 ```
 
