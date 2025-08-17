@@ -1,0 +1,103 @@
+﻿namespace WeaponRestrict.Config;
+
+internal static class WeaponDefaults
+{
+    public static Dictionary<int, string> DefaultDefIndexToClass() => new()
+    {
+        [1] = "weapon_deagle",
+        [2] = "weapon_elite",
+        [3] = "weapon_fiveseven",
+        [4] = "weapon_glock",
+        [7] = "weapon_ak47",
+        [8] = "weapon_aug",
+        [9] = "weapon_awp",
+        [10] = "weapon_famas",
+        [11] = "weapon_g3sg1",
+        [13] = "weapon_galilar",
+        [14] = "weapon_m249",
+        [16] = "weapon_m4a1",
+        [17] = "weapon_mac10",
+        [19] = "weapon_p90",
+        [23] = "weapon_mp5sd",
+        [24] = "weapon_ump45",
+        [25] = "weapon_xm1014",
+        [26] = "weapon_bizon",
+        [27] = "weapon_mag7",
+        [28] = "weapon_negev",
+        [29] = "weapon_sawedoff",
+        [30] = "weapon_tec9",
+        [31] = "weapon_taser",
+        [32] = "weapon_hkp2000",
+        [33] = "weapon_mp7",
+        [34] = "weapon_mp9",
+        [35] = "weapon_nova",
+        [36] = "weapon_p250",
+        [38] = "weapon_scar20",
+        [39] = "weapon_sg556",
+        [40] = "weapon_ssg08",
+        [60] = "weapon_m4a1_silencer",
+        [61] = "weapon_usp_silencer",
+        [63] = "weapon_cz75a",
+        [64] = "weapon_revolver",
+    };
+
+    public static Dictionary<string, Dictionary<int, Dictionary<string, int>>> DefaultRules()
+        => new(StringComparer.OrdinalIgnoreCase)
+        {
+            ["all"] = new()
+            {
+                [5]  = new() { ["weapon_awp"] = 1 },
+                [10] = new() { ["weapon_awp"] = 2 },
+            }
+        };
+
+    public static Dictionary<string, string> DefaultWeaponPretty() => new(StringComparer.OrdinalIgnoreCase)
+    {
+        ["weapon_deagle"] = "Desert Eagle",
+        ["weapon_elite"] = "Dual Berettas",
+        ["weapon_fiveseven"] = "Five-SeveN",
+        ["weapon_glock"] = "Glock-18",
+        ["weapon_hkp2000"] = "P2000",
+        ["weapon_usp_silencer"] = "USP-S",
+        ["weapon_p250"] = "P250",
+        ["weapon_cz75a"] = "CZ75-Auto",
+        ["weapon_tec9"] = "Tec-9",
+        ["weapon_revolver"] = "R8 Revolver",
+        ["weapon_taser"] = "Zeus x27",
+
+        ["weapon_mac10"] = "MAC-10",
+        ["weapon_mp9"] = "MP9",
+        ["weapon_mp7"] = "MP7",
+        ["weapon_mp5sd"] = "MP5-SD",
+        ["weapon_ump45"] = "UMP-45",
+        ["weapon_bizon"] = "PP-Bizon",
+        ["weapon_p90"] = "P90",
+
+        ["weapon_ak47"] = "AK-47",
+        ["weapon_galilar"] = "Galil AR",
+        ["weapon_famas"] = "FAMAS",
+        ["weapon_m4a1"] = "M4A4",
+        ["weapon_m4a1_silencer"] = "M4A1-S",
+        ["weapon_aug"] = "AUG",
+        ["weapon_sg556"] = "SG 553",
+
+        ["weapon_xm1014"] = "XM1014",
+        ["weapon_nova"] = "Nova",
+        ["weapon_sawedoff"] = "Sawed-Off",
+        ["weapon_mag7"] = "MAG-7",
+        ["weapon_m249"] = "M249",
+        ["weapon_negev"] = "Negev",
+
+        ["weapon_ssg08"] = "SSG 08",
+        ["weapon_awp"] = "AWP",
+        ["weapon_g3sg1"] = "G3SG1",
+        ["weapon_scar20"] = "SCAR-20",
+
+        ["weapon_hegrenade"] = "HE Grenade",
+        ["weapon_flashbang"] = "Flashbang",
+        ["weapon_smokegrenade"] = "Smoke Grenade",
+        ["weapon_incgrenade"] = "Incendiary Grenade",
+        ["weapon_molotov"] = "Molotov",
+        ["weapon_decoy"] = "Decoy Grenade",
+    };
+}
