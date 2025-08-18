@@ -1,4 +1,6 @@
-# CS2 WeaponRestrict
+<h1 align="center">
+  CS2 WeaponRestrict
+</h1>
 
 <p align="center">
 <i>Loved the tool? Please consider <a href="https://paypal.com/paypalme/playpointsk">donating</a> 💸 to help it improve!</i>
