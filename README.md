@@ -26,7 +26,7 @@ Supports:
 - **Bypass permissions** (e.g. VIP can ignore restrictions — optional, configurable)
 - **Hard-ban system** (limits with `0` or `NoBypassWeapons` cannot be bypassed by anyone)
 - **Automatic classnames** from weapon DefIndex
-- **Custom chat messages** (with weapon pretty names and placeholders)
+- **Custom chat messages with colors** (with placeholders and pretty names)
 - **Weapon price map** for refunds
 
 ---
@@ -40,6 +40,7 @@ Supports:
 - Multi-language friendly (phrases in config)
 - **Auto-sell restricted weapons** with money refund
 - **Per-map overrides** for rules and hard-bans
+- **Configurable chat colors** for prefix and messages
 
 ---
 
@@ -63,30 +64,26 @@ Supports:
 Config is generated on first run:
 ```json
 {
-  "ChatPrefix": "[RW]",
+  "ChatPrefix": "{green}[{default}RW{green}]",
   "TypePlayers": 1,
   "TypeWeapons": 1,
   "CountSpectators": false,
-  "BypassPermissions": [ "@vip/restrict", "@css/root" ],
+  "BypassPermissions": [
+    "@vip/restrict",
+    "@css/root"
+  ],
   "BypassAllowedWhenLimitIsZero": false,
-  "NoBypassWeapons": [ "weapon_awp", "weapon_g3sg1" ],
+  "NoBypassWeapons": [],
   "Phrases": {
-    "Block": "This weapon is restricted: {weapon} (limit: {limit}).",
-    "BlockTeam": "This weapon is restricted for your team: {weapon} (limit: {limit}).",
-    "SellRefund": "Restricted {weapon} was auto-sold for {price}$. ",
-    "SellRemoved": "Restricted {weapon} was removed from your inventory."
+    "Block": "{default}Táto zbraň je obmedzená: {lightred}{weapon} {default}(limit: {limit}).",
+    "BlockTeam": "{default}Táto zbraň je obmedzená: {lightred}{weapon} {default}(limit: {limit}).",
+    "SellRefund": "{default}Obmedzená zbraň {lightred}{weapon} {default}bola automaticky predaná za {green}{price}${default}.",
+    "SellRemoved": "{default}Obmedzená zbraň {lightred}{weapon} {default}bola odstránená z tvojho inventára.",
+    "WeaponPretty": { ... }
   },
   "DefIndexToClass": { ... },
-  "Rules": {
-    "all": {
-      "5": { "weapon_awp": 1 },
-      "10": { "weapon_awp": 2 },
-      "0": { "weapon_deagle": 0 }
-    },
-    "de_dust2": {
-      "0": { "weapon_scar20": 0 }
-    }
-  }
+  "Rules": { ... },
+  "ConfigVersion": 1
 }
 ```
 
@@ -104,6 +101,39 @@ Config is generated on first run:
 - **NoBypassWeapons** – explicit list of classnames that **nobody can bypass**, regardless of limit  
   Example: `[ "weapon_awp", "weapon_g3sg1" ]`
 - **Rules** – weapon limits per map and player count (`all` applies everywhere)
+
+---
+
+## 🎨 Chat Colors
+
+You can use the following color tags inside messages and prefixes:
+
+- `{default}`
+- `{white}`
+- `{darkred}`
+- `{green}`
+- `{lightyellow}`
+- `{lightblue}`
+- `{olive}`
+- `{lime}`
+- `{red}`
+- `{lightpurple}`
+- `{purple}`
+- `{grey}` or `{gray}`
+- `{yellow}`
+- `{gold}`
+- `{silver}`
+- `{blue}`
+- `{darkblue}`
+- `{bluegrey}`
+- `{magenta}`
+- `{lightred}`
+- `{orange}`
+
+**Example:**
+```json
+"ChatPrefix": "{blue}A{green}H{red}O{yellow}J"
+```
 
 ---
 
