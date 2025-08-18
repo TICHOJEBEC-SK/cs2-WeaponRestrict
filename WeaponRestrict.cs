@@ -12,7 +12,7 @@ public class WeaponRestrict : BasePlugin, IPluginConfig<RestrictedWeaponsConfig>
 {
     public override string ModuleName => "WeaponRestrict";
     public override string ModuleAuthor => "TICHOJEBEC";
-    public override string ModuleVersion => "1.3";
+    public override string ModuleVersion => "1.4";
     public override string ModuleDescription => "https://github.com/TICHOJEBEC-SK/cs2-WeaponRestrict";
 
     public RestrictedWeaponsConfig Config { get; set; } = new();

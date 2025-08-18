@@ -12,6 +12,8 @@ public class RestrictedWeaponsConfig : BasePluginConfig
     [JsonPropertyName("BypassPermissions")] public List<string> BypassPermissions { get; set; } = new() { "@vip/restrict", "@css/root" };
     [JsonPropertyName("BypassAllowedWhenLimitIsZero")] public bool BypassAllowedWhenLimitIsZero { get; set; } = false;
     [JsonPropertyName("NoBypassWeapons")] public List<string> NoBypassWeapons { get; set; } = new();
+    
+    [JsonPropertyName("BlockSound")] public string? BlockSound { get; set; } = null;
     [JsonPropertyName("Phrases")] public PhrasesSection Phrases { get; set; } = new();
     [JsonPropertyName("DefIndexToClass")] public Dictionary<int, string> DefIndexToClass { get; set; } = WeaponDefaults.DefaultDefIndexToClass();
     [JsonPropertyName("Rules")] public Dictionary<string, Dictionary<int, Dictionary<string, int>>> Rules { get; set; } = WeaponDefaults.DefaultRules();
@@ -50,4 +52,3 @@ public class PhrasesSection
         return raw.ToUpperInvariant();
     }
 }
-

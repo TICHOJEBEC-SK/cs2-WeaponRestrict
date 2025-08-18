@@ -10,6 +10,7 @@
   ],
   "BypassAllowedWhenLimitIsZero": false,
   "NoBypassWeapons": ["weapon_awp"],
+  "BlockSound": "sounds/example.vsnd",
   "Phrases": {
     "Block": "{default}Táto zbraň je obmedzená: {lightred}{weapon} {default}(limit: {limit}).",
     "BlockTeam": "{default}Táto zbraň je obmedzená: {lightred}{weapon} {default}(limit: {limit}).",

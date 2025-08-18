@@ -1,6 +1,4 @@
-<h1 align="center">
-  CS2 WeaponRestrict
-</h1>
+# CS2 WeaponRestrict
 
 <p align="center">
 <i>Loved the tool? Please consider <a href="https://paypal.com/paypalme/playpointsk">donating</a> 💸 to help it improve!</i>
@@ -28,6 +26,7 @@ Supports:
 - **Automatic classnames** from weapon DefIndex
 - **Custom chat messages with colors** (with placeholders and pretty names)
 - **Weapon price map** for refunds
+- **BlockSound support** – play a sound when a weapon is restricted
 
 ---
 
@@ -41,6 +40,7 @@ Supports:
 - **Auto-sell restricted weapons** with money refund
 - **Per-map overrides** for rules and hard-bans
 - **Configurable chat colors** for prefix and messages
+- **Configurable BlockSound** on restriction
 
 ---
 
@@ -74,11 +74,12 @@ Config is generated on first run:
   ],
   "BypassAllowedWhenLimitIsZero": false,
   "NoBypassWeapons": [],
+  "BlockSound": "sounds/example.vsnd",
   "Phrases": {
-    "Block": "{default}Táto zbraň je obmedzená: {lightred}{weapon} {default}(limit: {limit}).",
-    "BlockTeam": "{default}Táto zbraň je obmedzená: {lightred}{weapon} {default}(limit: {limit}).",
-    "SellRefund": "{default}Obmedzená zbraň {lightred}{weapon} {default}bola automaticky predaná za {green}{price}${default}.",
-    "SellRemoved": "{default}Obmedzená zbraň {lightred}{weapon} {default}bola odstránená z tvojho inventára.",
+    "Block": "{default}This weapon is restricted: {lightred}{weapon} {default}(limit: {limit}).",
+    "BlockTeam": "{default}This weapon is restricted for your team: {lightred}{weapon} {default}(limit: {limit}).",
+    "SellRefund": "{default}Restricted weapon {lightred}{weapon} {default}was automatically sold for {green}{price}${default}.",
+    "SellRemoved": "{default}Restricted weapon {lightred}{weapon} {default}was removed from your inventory.",
     "WeaponPretty": { ... }
   },
   "DefIndexToClass": { ... },
@@ -101,6 +102,7 @@ Config is generated on first run:
 - **NoBypassWeapons** – explicit list of classnames that **nobody can bypass**, regardless of limit  
   Example: `[ "weapon_awp", "weapon_g3sg1" ]`
 - **Rules** – weapon limits per map and player count (`all` applies everywhere)
+- **BlockSound** – path to a sound that plays when restriction triggers
 
 ---
 

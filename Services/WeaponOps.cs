@@ -10,13 +10,10 @@ internal static class WeaponOps
     public static string ResolveClassname(RestrictedWeaponsConfig cfg, int defIndex, string? item)
     {
         if (cfg.DefIndexToClass.TryGetValue(defIndex, out var cls)) return cls;
-        if (!string.IsNullOrWhiteSpace(item))
-        {
-            var s = item.Trim().ToLowerInvariant();
-            if (!s.StartsWith("weapon_")) s = "weapon_" + s;
-            return s;
-        }
-        return string.Empty;
+        if (string.IsNullOrWhiteSpace(item)) return string.Empty;
+        var s = item.Trim().ToLowerInvariant();
+        if (!s.StartsWith("weapon_")) s = "weapon_" + s;
+        return s;
     }
 
     private static void SwitchToKnifeNextFrame(CCSPlayerController player)

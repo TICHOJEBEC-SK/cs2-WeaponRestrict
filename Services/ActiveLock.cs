@@ -71,6 +71,9 @@ internal static class ActiveLock
             p.ExecuteClientCommand("drop");
             p.ExecuteClientCommand("slot3");
         }
-        catch { }
+        catch
+        {
+            //
+        }
     }
 }

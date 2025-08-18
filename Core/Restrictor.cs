@@ -51,8 +51,7 @@ internal sealed class Restrictor : IDisposable
         var playerCount = WorldQuery.CountPlayers(cfg, team);
         if (!RuleBook.TryGetLimit(cfg, classname, playerCount, team, out var limit)) return;
 
-        var isInNoBypassList = cfg.NoBypassWeapons?.Any(w => w.Equals(classname, StringComparison.OrdinalIgnoreCase)) ??
-                               false;
+        var isInNoBypassList = cfg.NoBypassWeapons?.Any(w => w.Equals(classname, StringComparison.OrdinalIgnoreCase)) ?? false;
         var hardBan = (limit == 0 && !cfg.BypassAllowedWhenLimitIsZero) || isInNoBypassList;
 
         if (!hardBan && Perms.HasBypass(cfg, player))
@@ -60,25 +59,28 @@ internal sealed class Restrictor : IDisposable
 
         var currentCount = WorldQuery.CountWeaponAcrossPlayers(cfg, classname, team);
         if (limit == -1 || currentCount <= limit) return;
-
+        
         var msgTemplate = cfg.TypeWeapons == 2 ? cfg.Phrases.BlockTeam : cfg.Phrases.Block;
         var msg = msgTemplate
             .Replace("{weapon}", cfg.Phrases.Pretty(classname))
             .Replace("{limit}", limit.ToString());
         Notify.Info(player, cfg.ChatPrefix, msg);
         
+        SoundService.TryEmitSafe(player, cfg.BlockSound);
+
         var roundSerial = _round.Current;
         ActiveLock.Start(_plugin, player, classname);
+
         _plugin.AddTimer(0.05f,
             () => { WeaponOps.EnqueueRestricted(_plugin, player, classname, _round, roundSerial); });
     }
-    
+
     public HookResult OnItemPurchase(EventItemPurchase ev, GameEventInfo info)
     {
         var player = ev.Userid;
         if (player == null || !player.IsValid || player.Connected != PlayerConnectedState.PlayerConnected)
             return HookResult.Continue;
-        
+
         var raw = ev.Weapon;
         var classname = string.IsNullOrWhiteSpace(raw)
             ? string.Empty
@@ -92,7 +94,6 @@ internal sealed class Restrictor : IDisposable
         TryAutoSellIfRestricted(player, classname);
         return HookResult.Continue;
     }
-
 
     private void TryAutoSellIfRestricted(CCSPlayerController player, string classname)
     {
@@ -110,8 +111,7 @@ internal sealed class Restrictor : IDisposable
         var playerCount = WorldQuery.CountPlayers(cfg, team);
         if (!RuleBook.TryGetLimit(cfg, classname, playerCount, team, out var limit)) return;
 
-        var isInNoBypassList = cfg.NoBypassWeapons?.Any(w => w.Equals(classname, StringComparison.OrdinalIgnoreCase)) ??
-                               false;
+        var isInNoBypassList = cfg.NoBypassWeapons?.Any(w => w.Equals(classname, StringComparison.OrdinalIgnoreCase)) ?? false;
         var hardBan = (limit == 0 && !cfg.BypassAllowedWhenLimitIsZero) || isInNoBypassList;
 
         if (!hardBan && Perms.HasBypass(cfg, player)) return;
@@ -119,13 +119,15 @@ internal sealed class Restrictor : IDisposable
         var currentCount = WorldQuery.CountWeaponAcrossPlayers(cfg, classname, team);
         var violates = limit == 0 || (limit != -1 && currentCount >= limit);
         if (!violates) return;
-
+        
+        SoundService.TryEmitSafe(player, cfg.BlockSound);
+        
+        RemoveWeaponByClass(player, classname);
+        TrySwitchToKnife(player);
+        
         var price = 0;
         if (WeaponDefaults.DefaultWeaponPrices().TryGetValue(classname, out var p))
             price = Math.Max(0, p);
-
-        RemoveWeaponByClass(player, classname);
-        TrySwitchToKnife(player);
 
         if (price > 0)
         {
@@ -142,7 +144,6 @@ internal sealed class Restrictor : IDisposable
             Notify.Info(player, cfg.ChatPrefix, msg);
         }
     }
-
 
     private static void RemoveWeaponByClass(CCSPlayerController player, string classname)
     {
@@ -161,18 +162,13 @@ internal sealed class Restrictor : IDisposable
         }
         catch
         {
+            //
         }
     }
 
     private static void TrySwitchToKnife(CCSPlayerController player)
     {
-        try
-        {
-            player?.ExecuteClientCommand("slot3");
-        }
-        catch
-        {
-        }
+        try { player?.ExecuteClientCommand("slot3"); } catch { }
     }
 
     private static void TryAddMoney(CCSPlayerController player, int amount)
@@ -186,6 +182,7 @@ internal sealed class Restrictor : IDisposable
         }
         catch
         {
+            //
         }
     }
 }
