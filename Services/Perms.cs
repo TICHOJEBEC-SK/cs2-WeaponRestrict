@@ -13,7 +13,7 @@ internal static class Perms
 
         var list = cfg.BypassPermissions;
         if (list.Count == 0) return false;
-        
+
         foreach (var p in list)
         {
             try
@@ -21,10 +21,7 @@ internal static class Perms
                 if (!string.IsNullOrWhiteSpace(p) && AdminManager.PlayerHasPermissions(player, p))
                     return true;
             }
-            catch
-            {
-                //
-            }
+            catch { /**/ }
         }
         return false;
     }

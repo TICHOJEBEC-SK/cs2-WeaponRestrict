@@ -46,8 +46,10 @@ internal static class WeaponDefaults
         {
             ["all"] = new()
             {
-                [5]  = new() { ["weapon_awp"] = 1 },
-                [10] = new() { ["weapon_awp"] = 2 },
+                [1]  = new() { ["weapon_awp"] = 1 },
+                [2] = new() { ["weapon_awp"] = 2 },
+                [3] = new() { ["weapon_awp"] = 3 },
+                [4] = new() { ["weapon_awp"] = 4 },
             }
         };
 
@@ -99,55 +101,5 @@ internal static class WeaponDefaults
         ["weapon_incgrenade"] = "Incendiary Grenade",
         ["weapon_molotov"] = "Molotov",
         ["weapon_decoy"] = "Decoy Grenade",
-    };
-    
-    public static Dictionary<string, int> DefaultWeaponPrices() => new(StringComparer.OrdinalIgnoreCase)
-    {
-        ["weapon_glock"] = 200,
-        ["weapon_hkp2000"] = 200,
-        ["weapon_usp_silencer"] = 200,
-        ["weapon_p250"] = 300,
-        ["weapon_cz75a"] = 500,
-        ["weapon_tec9"] = 500,
-        ["weapon_fiveseven"] = 500,
-        ["weapon_elite"] = 300,
-        ["weapon_deagle"] = 700,
-        ["weapon_revolver"] = 600,
-        
-        ["weapon_mac10"] = 1050,
-        ["weapon_mp9"] = 1250,
-        ["weapon_mp7"] = 1500,
-        ["weapon_mp5sd"] = 1500,
-        ["weapon_ump45"] = 1200,
-        ["weapon_bizon"] = 1400,
-        ["weapon_p90"] = 2350,
-        
-        ["weapon_galilar"] = 1800,
-        ["weapon_famas"]  = 2050,
-        ["weapon_ak47"]   = 2700,
-        ["weapon_m4a1"]   = 2900,
-        ["weapon_m4a1_silencer"] = 2900,
-        ["weapon_aug"]    = 3300,
-        ["weapon_sg556"]  = 3000,
-        
-        ["weapon_xm1014"] = 2000,
-        ["weapon_nova"]   = 1050,
-        ["weapon_sawedoff"]=1100,
-        ["weapon_mag7"]   = 1300,
-        ["weapon_m249"]   = 4750,
-        ["weapon_negev"]  = 1700,
-        
-        ["weapon_ssg08"] = 1700,
-        ["weapon_awp"]   = 4750,
-        ["weapon_g3sg1"] = 5000,
-        ["weapon_scar20"]= 5000,
-        
-        ["weapon_taser"] = 200,
-        ["weapon_hegrenade"] = 300,
-        ["weapon_flashbang"] = 200,
-        ["weapon_smokegrenade"] = 300,
-        ["weapon_incgrenade"] = 500,
-        ["weapon_molotov"] = 500,
-        ["weapon_decoy"] = 50
     };
 }

@@ -1,6 +1,8 @@
-﻿using CounterStrikeSharp.API;
+﻿using System.Collections.Concurrent;
 using CounterStrikeSharp.API.Core;
-using WeaponRestrict.Config;
+using CounterStrikeSharp.API.Modules.Memory;
+using CounterStrikeSharp.API.Modules.Memory.DynamicFunctions;
+using CounterStrikeSharp.API.Modules.Utils;
 using WeaponRestrict.Services;
 
 namespace WeaponRestrict.Core;
@@ -8,181 +10,108 @@ namespace WeaponRestrict.Core;
 internal sealed class Restrictor : IDisposable
 {
     private readonly WeaponRestrict _plugin;
-    private readonly DelayedWork _debounce;
-    private readonly RoundSerial _round;
+    
+    private static readonly ConcurrentDictionary<string, long> Seen = new();
+    
+    private const int DebounceWindowMs = 1500;
 
-    public Restrictor(WeaponRestrict plugin, RoundSerial round)
+    public Restrictor(WeaponRestrict plugin)
     {
         _plugin = plugin;
-        _round = round;
-        _debounce = new DelayedWork(plugin, 220);
+        VirtualFunctions.CCSPlayer_ItemServices_CanAcquireFunc.Hook(OnWeaponCanAcquire, HookMode.Pre);
     }
 
     public void Dispose()
     {
-        _debounce.Dispose();
+        VirtualFunctions.CCSPlayer_ItemServices_CanAcquireFunc.Unhook(OnWeaponCanAcquire, HookMode.Pre);
     }
 
-    public HookResult OnItemEquip(EventItemEquip ev, GameEventInfo info)
+    private static bool SeenRecently(ulong steamId, string weapon, int windowMs)
     {
-        var player = ev.Userid;
-        if (player == null || !player.IsValid || player.Connected != PlayerConnectedState.PlayerConnected)
+        var key = $"{steamId}:{weapon}";
+        var now = DateTimeOffset.UtcNow.ToUnixTimeMilliseconds();
+
+        if (Seen.TryGetValue(key, out var last) && (now - last) < windowMs)
+            return true;
+
+        Seen[key] = now;
+        
+        if (Seen.Count > 4096)
+        {
+            foreach (var kv in Seen)
+            {
+                if ((now - kv.Value) > (windowMs * 4))
+                    Seen.TryRemove(kv.Key, out _);
+            }
+        }
+
+        return false;
+    }
+
+    private HookResult OnWeaponCanAcquire(DynamicHook hook)
+    {
+        var player = hook.GetParam<CCSPlayer_ItemServices>(0)
+            ?.Pawn.Value?.Controller.Value?.As<CCSPlayerController>();
+
+        if (player == null || !player.IsValid || !player.PawnIsAlive)
             return HookResult.Continue;
+        
+        var econ = hook.GetParam<CEconItemView>(1);
+        if (econ == null) return HookResult.Continue;
 
-        var defIndex = (int)(ev?.Defindex ?? 0);
-        var itemName = ev?.Item;
+        var vdata = VirtualFunctions
+            .GetCSWeaponDataFromKeyFunc
+            .Invoke(-1, econ.ItemDefinitionIndex.ToString());
 
-        _debounce.Schedule(player, () => ProcessEquipDeferred(player, defIndex, itemName));
-        return HookResult.Continue;
-    }
-
-    private void ProcessEquipDeferred(CCSPlayerController player, int defIndex, string? item)
-    {
-        if (!player.IsValid || player.Connected != PlayerConnectedState.PlayerConnected) return;
+        if (vdata == null) return HookResult.Continue;
+        var classname = vdata.Name;
+        if (string.IsNullOrWhiteSpace(classname)) return HookResult.Continue;
 
         var cfg = _plugin.Config;
         var pawn = player.PlayerPawn?.Value;
-        if (pawn == null || !pawn.IsValid) return;
+        if (pawn == null || !pawn.IsValid) return HookResult.Continue;
 
         var team = (int)pawn.TeamNum;
-        var classname = WeaponOps.ResolveClassname(cfg, defIndex, item);
-        if (string.IsNullOrWhiteSpace(classname)) return;
-
         var playerCount = WorldQuery.CountPlayers(cfg, team);
-        if (!RuleBook.TryGetLimit(cfg, classname, playerCount, team, out var limit)) return;
 
-        var isInNoBypassList = cfg.NoBypassWeapons?.Any(w => w.Equals(classname, StringComparison.OrdinalIgnoreCase)) ?? false;
+        if (!RuleBook.TryGetLimit(cfg, classname, playerCount, team, out var limit))
+            return HookResult.Continue;
+
+        var isInNoBypassList = cfg.NoBypassWeapons?.Any(w =>
+            w.Equals(classname, StringComparison.OrdinalIgnoreCase)) ?? false;
+
         var hardBan = (limit == 0 && !cfg.BypassAllowedWhenLimitIsZero) || isInNoBypassList;
-
         if (!hardBan && Perms.HasBypass(cfg, player))
-            return;
-
-        var currentCount = WorldQuery.CountWeaponAcrossPlayers(cfg, classname, team);
-        if (limit == -1 || currentCount <= limit) return;
-        
-        var msgTemplate = cfg.TypeWeapons == 2 ? cfg.Phrases.BlockTeam : cfg.Phrases.Block;
-        var msg = msgTemplate
-            .Replace("{weapon}", cfg.Phrases.Pretty(classname))
-            .Replace("{limit}", limit.ToString());
-        Notify.Info(player, cfg.ChatPrefix, msg);
-        
-        SoundService.TryEmitSafe(player, cfg.BlockSound);
-
-        var roundSerial = _round.Current;
-        ActiveLock.Start(_plugin, player, classname);
-
-        _plugin.AddTimer(0.05f,
-            () => { WeaponOps.EnqueueRestricted(_plugin, player, classname, _round, roundSerial); });
-    }
-
-    public HookResult OnItemPurchase(EventItemPurchase ev, GameEventInfo info)
-    {
-        var player = ev.Userid;
-        if (player == null || !player.IsValid || player.Connected != PlayerConnectedState.PlayerConnected)
             return HookResult.Continue;
-
-        var raw = ev.Weapon;
-        var classname = string.IsNullOrWhiteSpace(raw)
-            ? string.Empty
-            : raw.StartsWith("weapon_", StringComparison.OrdinalIgnoreCase)
-                ? raw.Trim()
-                : "weapon_" + raw.Trim().ToLowerInvariant();
-
-        if (string.IsNullOrWhiteSpace(classname))
-            return HookResult.Continue;
-
-        TryAutoSellIfRestricted(player, classname);
-        return HookResult.Continue;
-    }
-
-    private void TryAutoSellIfRestricted(CCSPlayerController player, string classname)
-    {
-        if (!player.IsValid || player.Connected != PlayerConnectedState.PlayerConnected) return;
-
-        var cfg = _plugin.Config;
-        var pawn = player.PlayerPawn?.Value;
-        if (pawn == null || !pawn.IsValid) return;
-
-        var team = (int)pawn.TeamNum;
-
-        var rulesForMap = cfg.ResolveRulesForMap(Server.MapName);
-        if (rulesForMap.Count == 0) return;
-
-        var playerCount = WorldQuery.CountPlayers(cfg, team);
-        if (!RuleBook.TryGetLimit(cfg, classname, playerCount, team, out var limit)) return;
-
-        var isInNoBypassList = cfg.NoBypassWeapons?.Any(w => w.Equals(classname, StringComparison.OrdinalIgnoreCase)) ?? false;
-        var hardBan = (limit == 0 && !cfg.BypassAllowedWhenLimitIsZero) || isInNoBypassList;
-
-        if (!hardBan && Perms.HasBypass(cfg, player)) return;
 
         var currentCount = WorldQuery.CountWeaponAcrossPlayers(cfg, classname, team);
         var violates = limit == 0 || (limit != -1 && currentCount >= limit);
-        if (!violates) return;
+        if (!violates) return HookResult.Continue;
         
-        SoundService.TryEmitSafe(player, cfg.BlockSound);
-        
-        RemoveWeaponByClass(player, classname);
-        TrySwitchToKnife(player);
-        
-        var price = 0;
-        if (WeaponDefaults.DefaultWeaponPrices().TryGetValue(classname, out var p))
-            price = Math.Max(0, p);
+        var steam = player.SteamID;
+        var suppressNotify = SeenRecently(steam, classname, DebounceWindowMs);
 
-        if (price > 0)
+        if (!suppressNotify)
         {
-            TryAddMoney(player, price);
-            var msg = cfg.Phrases.SellRefund
+            var msgTemplate = cfg.TypeWeapons == 2 ? cfg.Phrases.BlockTeam : cfg.Phrases.Block;
+            var msg = msgTemplate
                 .Replace("{weapon}", cfg.Phrases.Pretty(classname))
-                .Replace("{price}", price.ToString());
+                .Replace("{limit}", limit.ToString());
             Notify.Info(player, cfg.ChatPrefix, msg);
+
+            SoundService.TryEmitSafe(player, cfg.BlockSound);
+        }
+        
+        var method = hook.GetParam<AcquireMethod>(2);
+        if (method != AcquireMethod.PickUp)
+        {
+            hook.SetReturn(AcquireResult.AlreadyOwned);
         }
         else
         {
-            var msg = cfg.Phrases.SellRemoved
-                .Replace("{weapon}", cfg.Phrases.Pretty(classname));
-            Notify.Info(player, cfg.ChatPrefix, msg);
+            hook.SetReturn(AcquireResult.InvalidItem);
         }
-    }
 
-    private static void RemoveWeaponByClass(CCSPlayerController player, string classname)
-    {
-        try
-        {
-            var ws = player.PlayerPawn?.Value?.WeaponServices;
-            var list = ws?.MyWeapons;
-            if (list == null || list.Count == 0) return;
-
-            foreach (var kv in list.ToArray())
-            {
-                var weap = kv.Value;
-                if (weap == null || !weap.IsValid) continue;
-                if (string.Equals(weap.DesignerName, classname, StringComparison.OrdinalIgnoreCase)) weap.Remove();
-            }
-        }
-        catch
-        {
-            //
-        }
-    }
-
-    private static void TrySwitchToKnife(CCSPlayerController player)
-    {
-        try { player?.ExecuteClientCommand("slot3"); } catch { }
-    }
-
-    private static void TryAddMoney(CCSPlayerController player, int amount)
-    {
-        try
-        {
-            var money = player.InGameMoneyServices?.Account ?? 0;
-            var target = Math.Clamp(money + amount, 0, 16000);
-            if (player.InGameMoneyServices != null)
-                player.InGameMoneyServices.Account = target;
-        }
-        catch
-        {
-            //
-        }
+        return HookResult.Stop;
     }
 }

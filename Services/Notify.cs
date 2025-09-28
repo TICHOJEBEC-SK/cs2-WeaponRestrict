@@ -19,7 +19,7 @@ internal static class Notify
         ["lightpurple"] = ChatColors.LightPurple,
         ["purple"] = ChatColors.Purple,
         ["grey"] = ChatColors.Grey,
-        ["gray"] = ChatColors.Grey, // alias
+        ["gray"] = ChatColors.Grey,
         ["yellow"] = ChatColors.Yellow,
         ["gold"] = ChatColors.Gold,
         ["silver"] = ChatColors.Silver,
@@ -37,10 +37,10 @@ internal static class Notify
             return string.Empty;
 
         var t = text;
-        
+
         foreach (var kv in ColorMap)
             t = t.Replace("{" + kv.Key + "}", kv.Value.ToString());
-        
+
         return t;
     }
 

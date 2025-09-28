@@ -14,9 +14,9 @@ internal static class SoundService
         var hasSlash = s.Contains('/') || s.Contains('\\');
         var lower = s.ToLowerInvariant();
         var looksLikeFile = lower.EndsWith(".vsnd") || lower.EndsWith(".vsnd_c") || lower.Contains("/");
-        
+
         if (!hasSlash && !looksLikeFile) return true;
-        
+
         if (!hasSlash && s.Contains('.') && !looksLikeFile) return true;
 
         return false;
@@ -38,9 +38,6 @@ internal static class SoundService
         {
             player.PlayerPawn?.Value?.EmitSound(s);
         }
-        catch 
-        {
-            //
-        }
+        catch { /**/ }
     }
 }
