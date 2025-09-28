@@ -103,6 +103,48 @@ Config is generated on first run:
 
 ---
 
+## 🔢 How Rules Work
+
+The plugin picks the **highest rule key ≤ current player count**.  
+This means:
+- Keys represent **minimum player thresholds**.  
+- If no exact key exists, the nearest lower one is used.  
+
+Example config:
+```json
+"Rules": {
+  "all": {
+    "1": { "weapon_deagle": 0 },
+    "3": { "weapon_deagle": 2 },
+    "4": { "weapon_deagle": 3 }
+  }
+}
+```
+
+### Explanation
+- 1 player → uses key `1` → `deagle = 0` (hard-ban)  
+- 2 players → still uses key `1` (because `3` > 2) → `deagle = 0`  
+- 3 players → key `3` → max 2 deagles  
+- 4 players → key `4` → max 3 deagles  
+- 5 players → key `4` (nearest ≤ 5) → max 3 deagles  
+
+👉 If you want a weapon to be **unrestricted** for certain player counts, you must **explicitly set `-1`**:  
+```json
+"Rules": {
+  "all": {
+    "1": { "weapon_awp": 0 },
+    "2": { "weapon_awp": -1 }, // unrestricted for 2 players
+    "5": { "weapon_awp": 1 }   // max 1 after 5 players
+  }
+}
+```
+
+- `0` = completely banned  
+- `-1` = unlimited  
+- `N` = maximum allowed  
+
+---
+
 ## 🎨 Chat Colors
 
 You can use the following color tags inside messages and prefixes:
