@@ -16,9 +16,9 @@
 ## 📜 About the Plugin
 
 A **Counter-Strike 2 plugin** for **CounterStrikeSharp** that lets you **restrict weapons** by rules.  
-If a player picks up or buys a restricted weapon, it will be:
-- **Automatically dropped and swapped to knife** (equip restriction)
-- **Automatically sold with refund** (purchase restriction)
+If a player picks up or buys a restricted weapon, it will be blocked at the engine level:
+- **No pickup** (weapon stays on the ground)
+- **No purchase** (money is not spent, only chat message is shown)
 
 Supports:
 - **Configurable restrictions** (per map, per team, per player count)
@@ -27,7 +27,6 @@ Supports:
 - **Hard-ban system** (limits with `0` or `NoBypassWeapons` cannot be bypassed by anyone)
 - **Automatic classnames** from weapon DefIndex
 - **Custom chat messages with colors** (with placeholders and pretty names)
-- **Weapon price map** for refunds
 - **BlockSound support** – play a sound when a weapon is restricted
 
 ---
@@ -35,11 +34,9 @@ Supports:
 ## 🔹 Features
 
 - Restrict **any weapon** via config
-- Drop system with **anti-spam protection**
-- **Safe ActiveLock** prevents exploits (players can’t force-equip restricted guns)
+- Works directly through **CanAcquire hook** (no hacks, no forced drops)
 - Lightweight and crash-safe
 - Multi-language friendly (phrases in config)
-- **Auto-sell restricted weapons** with money refund
 - **Per-map overrides** for rules and hard-bans
 - **Configurable chat colors** for prefix and messages
 - **Configurable BlockSound** on restriction
@@ -80,8 +77,6 @@ Config is generated on first run:
   "Phrases": {
     "Block": "{default}This weapon is restricted: {lightred}{weapon} {default}(limit: {limit}).",
     "BlockTeam": "{default}This weapon is restricted for your team: {lightred}{weapon} {default}(limit: {limit}).",
-    "SellRefund": "{default}Restricted weapon {lightred}{weapon} {default}was automatically sold for {green}{price}${default}.",
-    "SellRemoved": "{default}Restricted weapon {lightred}{weapon} {default}was removed from your inventory.",
     "WeaponPretty": { ... }
   },
   "DefIndexToClass": { ... },
@@ -112,27 +107,10 @@ Config is generated on first run:
 
 You can use the following color tags inside messages and prefixes:
 
-- `{default}`
-- `{white}`
-- `{darkred}`
-- `{green}`
-- `{lightyellow}`
-- `{lightblue}`
-- `{olive}`
-- `{lime}`
-- `{red}`
-- `{lightpurple}`
-- `{purple}`
-- `{grey}` or `{gray}`
-- `{yellow}`
-- `{gold}`
-- `{silver}`
-- `{blue}`
-- `{darkblue}`
-- `{bluegrey}`
-- `{magenta}`
-- `{lightred}`
-- `{orange}`
+- `{default}`, `{white}`, `{darkred}`, `{green}`, `{lightyellow}`, `{lightblue}`
+- `{olive}`, `{lime}`, `{red}`, `{lightpurple}`, `{purple}`, `{grey}`, `{gray}`
+- `{yellow}`, `{gold}`, `{silver}`, `{blue}`, `{darkblue}`, `{bluegrey}`
+- `{magenta}`, `{lightred}`, `{orange}`
 
 **Example:**
 ```json
